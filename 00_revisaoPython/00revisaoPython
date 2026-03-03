@@ -1,0 +1,70 @@
+# ===============
+# SISTEMA DE NOTAS 
+# YURI 
+# ===============
+alunos_notas = {}
+
+def cadastrar_aluno():
+    """Cadastra um aluno e suas 3 notas."""
+    nome = input("Digite o nome do aluno: ").strip()
+    if nome in alunos_notas:
+        print("Aluno já cadastrado.")
+        return
+    
+    notas = []
+    for i in range(1, 4):
+        while True:
+            try:
+                nota = float(input(f"Digite a nota {i} (0-10): "))
+                if 0 <= nota <= 10:
+                    notas.append(nota)
+                    break
+                else:
+                    print("Nota inválida! Digite um valor entre 0 e 10.")
+            except ValueError:
+                print("Entrada inválida! Digite um número.")
+    
+    alunos_notas[nome] = notas
+    print(f"Aluno {nome} cadastrado com sucesso!\n")
+
+def calcular_situacao(media):
+    """Retorna a situação baseada na média."""
+    if media >= 7:
+        return "Aprovado"
+    elif media >= 5:
+        return "Recuperação"
+    else:
+        return "Reprovado"
+
+def exibir_relatorio():
+    """Exibe um relatório com todos os alunos, médias e situações."""
+    if not alunos_notas:
+        print("Nenhum aluno cadastrado.")
+        return
+    
+    print("\n--- Relatório de Notas ---")
+    print(f"{'Nome':<15} | {'Média':<6} | {'Situação'}")
+    print("-" * 35)
+    
+    for nome, notas in alunos_notas.items():
+        media = sum(notas) / len(notas)
+        situacao = calcular_situacao(media)
+        print(f"{nome:<15} | {media:<6.2f} | {situacao}")
+    print("-" * 35 + "\n")
+
+while True:
+    print("1. Cadastrar Aluno e Notas")
+    print("2. Exibir Relatório (Notas/Médias)")
+    print("3. Sair")
+    
+    opcao = input("Escolha uma opção: ")
+    
+    if opcao == '1':
+        cadastrar_aluno()
+    elif opcao == '2':
+        exibir_relatorio()
+    elif opcao == '3':
+        print("Saindo do sistema.")
+        break
+    else:
+        print("Opção inválida, tente novamente.\n")
