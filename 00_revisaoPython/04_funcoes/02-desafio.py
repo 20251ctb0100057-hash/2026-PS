@@ -1,10 +1,10 @@
 """
 -------------------------------------------------------------------------------
 IFPR - INSTITUTO FEDERAL DO PARANÁ
-Disciplina: Programação
-Atividade: 02-desafio.py (Cálculo de Médias e Situações Acadêmicas)
+Disciplina: Programação de Sistemas
 Nome: Yuri Gonçalves Leuch
 Data: 05/03/2026
+Repositório: https://github.com/20251ctb0100057-hash/2026-PS
 -------------------------------------------------------------------------------
 """
 
