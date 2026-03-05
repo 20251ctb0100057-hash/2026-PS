@@ -1,9 +1,8 @@
-"""
-NOME: Yuri Gonçalves
-DISCIPLINA: Programação de Sistemas
-DATA: 03/03/2026
-DESCRIÇÃO: Sistema de Gestão de Estoque
-"""
+#
+#NOME: Yuri Gonçalves
+#DISCIPLINA: Programação de Sistemas
+#DATA: 03/03/2026
+#DESCRIÇÃO: Sistema de Gestão de Estoque
 
 estoque = [
     {"nome": "Teclado", "quantidade": 5},
