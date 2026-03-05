@@ -1,9 +1,16 @@
-# =====================================================
-# SISTEMA DE CÁLCULO DE IMC
-# =====================================================
-# [Cabeçalho de identificação do autor e disciplina]
+# ========================================
 
-# ---- FUNÇÃO SEM PARÂMETROS E SEM RETORNO ----
+# SISTEMA DE IMC 
+
+# ========================================
+
+# Disciplina : Programação de Sistemas (PS)
+# Aula       :
+# Autor      : Yuri Gonçalves Leuch
+# Data       : 05/03/2026
+# Repositório: https://github.com/20251ctb0100057-hash/2026-PS
+
+# ===============================================
 
 def exibir_cabecalho(): # Define a função que não precisa de dados externos
     """Exibe o cabeçalho do sistema no terminal."""  # Docstring para documentar o que a função faz
