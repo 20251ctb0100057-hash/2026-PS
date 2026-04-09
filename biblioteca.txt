@@ -1,3 +1,0 @@
-O Programador Pragmático|Andrew Hunt|True
-Código Limpo|Robert C. Martin|False
-Padrões de Projeto|Erich Gamma|True
