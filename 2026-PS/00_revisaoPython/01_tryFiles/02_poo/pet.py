@@ -14,7 +14,6 @@ class Pet:
     # agora agrupamos os dados e comportamentos dentro de uma classe
 
     def __init__(self, nome, especie, idade, raca, peso, dono, vacinado):
-        # Método construtor para inicializar os atributos do pet
         # Executado automaticamente quando criamos um novo pet
         # Ex: pet1 = Pet("Rex", "Cachorro", 5)
         # Parâmetros
@@ -72,15 +71,6 @@ class Pet:
             print(f"{self.nome} saiu do hotel.")
 
     def calcular_diaria(self):
-        '''
-        Calcula o valor da diaria do pet
-        ATIVIDADE: Melhore este metodo para verificar se o pet realmente está hospedado.
-        Se não estiver, mostre uma mensagem avisando.
-        Sugestao:
-        - Pet com idade até 3 anos: R$50,00
-        - Pet com idade entre 4 e 10 anos: R$60,00
-        - Pet com idade acima de 10 anos: R$75,00
-        '''
         if not self.hospedado:
             print(f"{self.nome} não está hospedado no hotel.")
             return None
@@ -161,8 +151,8 @@ class Pet:
 ATIVIDADE FINAL:
 cRIE MAIS DOIS PETS E TESTE TODOS OS METODOS IMPLEMENTADOS
 '''
-pet1 = Pet("nobru🐶", "Cachorro", 5, "Labrador", 22.5, "ana", True)
-pet2 = Pet("Yuri", "Gato", 2, "Siamês", 4.2, "Maria Eduarda", True)
+pet1 = Pet("joão avila magalhoes🐶", "Cachorro", 5, "Labrador", 22.5, "agata", True)
+pet2 = Pet("Mimi", "Gato", 2, "Siamês", 4.2, "gustavo", True)
 pet3 = Pet("Fernando🐶", "Cachorro", 11, "Vira-lata", 18.0, "Ana", False)
 
 pet1.exibir_dados()
