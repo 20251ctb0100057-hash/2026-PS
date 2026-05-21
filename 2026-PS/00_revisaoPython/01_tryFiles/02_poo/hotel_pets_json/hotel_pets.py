@@ -1,6 +1,7 @@
-import pickle
+import json
 import os
 
+ARQUIVO_JSON = "pets.json"
 class Pet:
     def __init__(self, nome, especie, idade, peso, dono, vacinado=False, hospedado=False):
         self.nome = nome
@@ -11,6 +12,11 @@ class Pet:
         self.vacinado = vacinado
         self.hospedado = hospedado
 
+    def para_dicionario(self):
+        return {
+            "nome": self.nome,
+            "especie": self
+        }
     def exibir_dados(self):
         status = "Hospedado" if self.hospedado else "Livre"
         vacina = "Vacinado" if self.vacinado else "Não Vacinado"
@@ -25,8 +31,8 @@ class Pet:
         print("-" * 30)
 
     # Método essencial para persistência em TXT
-    def para_linha_txt(self):
-        return f"{self.nome};{self.especie};{self.idade};{self.peso};{self.dono};{self.vacinado};{self.hospedado}"
+    #def para_linha_txt(self):
+       # return f"{self.nome};{self.especie};{self.idade};{self.peso};{self.dono};{self.vacinado};{self.hospedado}"
 
 # --- FUNÇÕES DE PERSISTÊNCIA ---
 
