@@ -1,5 +1,7 @@
 /*Yuri Gonçalves Leuch
 Exercicios com java: Menor valor, Maior valor, Contar acima e Soma - Float, int, double
+
+ Para o Double e Float, é só substituir o int pelo nome deles, ou seja, ao inves de int contarAcima, basta colocar double contarAcima, ou float. Escolhi fazer o for da maneira mais rapida, e nao na tradicional.
 */
     // 1 - Calcula Soma
 
@@ -70,3 +72,4 @@ Exercicios com java: Menor valor, Maior valor, Contar acima e Soma - Float, int,
     }
 
 }
+
