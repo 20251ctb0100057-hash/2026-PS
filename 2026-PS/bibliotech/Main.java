@@ -2,7 +2,7 @@
  * Disciplina: 2026-PS
  * Projeto   : bibliotech
  * Arquivo   : Main.java
- * Autor     : seu nome
+ * Autor     : Yuri
  * Descricao : BiblioTech v0.2 (Aula 37): as classes do diagrama existem
  *             e se apresentam. O menu chega na Aula 39.
  */

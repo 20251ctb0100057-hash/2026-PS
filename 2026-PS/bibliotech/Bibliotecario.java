@@ -2,7 +2,7 @@
  * Disciplina: 2026-PS
  * Projeto   : bibliotech
  * Arquivo   : Bibliotecario.java
- * Autor     : seu nome
+ * Autor     : Yuri
  * Descricao : Bibliotecario E UM TIPO DE Usuario, com a matricula funcional.
  */
 public class Bibliotecario extends Usuario {
