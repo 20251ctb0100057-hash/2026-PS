@@ -67,7 +67,6 @@ public class LivroDAO {
 
         List<String> livros = new ArrayList<>();
 
-        // Ordena do ano mais recente para o mais antigo.
         String sql = "SELECT id, titulo, autor, ano " +
                      "FROM livros ORDER BY ano DESC";
 
@@ -76,7 +75,6 @@ public class LivroDAO {
              ResultSet resultado = comando.executeQuery()) {
 
             while (resultado.next()) {
-
                 int id = resultado.getInt("id");
                 String titulo = resultado.getString("titulo");
                 String autor = resultado.getString("autor");
@@ -93,5 +91,35 @@ public class LivroDAO {
         }
 
         return livros;
+    }
+
+    public String buscarLivroPorId(int id) {
+
+        String sql = "SELECT id, titulo, autor, ano " +
+                     "FROM livros WHERE id = ?";
+
+        try (Connection conexao = Conexao.conectar();
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
+
+            comando.setInt(1, id);
+
+            try (ResultSet resultado = comando.executeQuery()) {
+
+                if (resultado.next()) {
+                    int codigo = resultado.getInt("id");
+                    String titulo = resultado.getString("titulo");
+                    String autor = resultado.getString("autor");
+                    int ano = resultado.getInt("ano");
+
+                    return codigo + " - " + titulo + " - "
+                         + autor + " (" + ano + ")";
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Erro ao buscar livro: " + e.getMessage());
+        }
+
+        return null;
     }
 }
