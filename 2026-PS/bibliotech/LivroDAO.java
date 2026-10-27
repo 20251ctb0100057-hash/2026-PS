@@ -1,3 +1,4 @@
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -63,26 +64,26 @@ public class LivroDAO {
         }
     }
 
-    public List<String> listarLivros() {
+    // Retorna uma lista de objetos Livro
+    public List<Livro> listarLivros() {
 
-        List<String> livros = new ArrayList<>();
+        List<Livro> livros = new ArrayList<>();
 
-        String sql = "SELECT id, titulo, autor, ano " +
-                     "FROM livros ORDER BY ano DESC";
+        String sql = "SELECT id, titulo, autor, ano "
+                   + "FROM livros ORDER BY titulo";
 
         try (Connection conexao = Conexao.conectar();
              PreparedStatement comando = conexao.prepareStatement(sql);
              ResultSet resultado = comando.executeQuery()) {
 
             while (resultado.next()) {
+
                 int id = resultado.getInt("id");
                 String titulo = resultado.getString("titulo");
                 String autor = resultado.getString("autor");
                 int ano = resultado.getInt("ano");
 
-                String livro = id + " - " + titulo + " - "
-                             + autor + " (" + ano + ")";
-
+                Livro livro = new Livro(id, titulo, autor, ano);
                 livros.add(livro);
             }
 
@@ -93,10 +94,11 @@ public class LivroDAO {
         return livros;
     }
 
-    public String buscarLivroPorId(int id) {
+    // Retorna um objeto Livro ou null se não encontrar
+    public Livro buscarLivroPorId(int id) {
 
-        String sql = "SELECT id, titulo, autor, ano " +
-                     "FROM livros WHERE id = ?";
+        String sql = "SELECT id, titulo, autor, ano "
+                   + "FROM livros WHERE id = ?";
 
         try (Connection conexao = Conexao.conectar();
              PreparedStatement comando = conexao.prepareStatement(sql)) {
@@ -106,13 +108,13 @@ public class LivroDAO {
             try (ResultSet resultado = comando.executeQuery()) {
 
                 if (resultado.next()) {
+
                     int codigo = resultado.getInt("id");
                     String titulo = resultado.getString("titulo");
                     String autor = resultado.getString("autor");
                     int ano = resultado.getInt("ano");
 
-                    return codigo + " - " + titulo + " - "
-                         + autor + " (" + ano + ")";
+                    return new Livro(codigo, titulo, autor, ano);
                 }
             }
 
