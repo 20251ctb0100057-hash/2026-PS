@@ -1,4 +1,3 @@
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -123,5 +122,38 @@ public class LivroDAO {
         }
 
         return null;
+    }
+
+    // NOVO MÉTODO ADICIONADO PARA A PARTE 18: Busca livros pelo título usando LIKE
+    public List<Livro> buscarLivrosPorTitulo(String titulo) {
+        List<Livro> livros = new ArrayList<>();
+
+        String sql = "SELECT id, titulo, autor, ano " +
+                     "FROM livros " +
+                     "WHERE titulo LIKE ? " +
+                     "ORDER BY titulo";
+
+        try (Connection conexao = Conexao.conectar();
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
+
+            comando.setString(1, "%" + titulo + "%");
+
+            try (ResultSet resultado = comando.executeQuery()) {
+                while (resultado.next()) {
+                    Livro livro = new Livro(
+                        resultado.getInt("id"),
+                        resultado.getString("titulo"),
+                        resultado.getString("autor"),
+                        resultado.getInt("ano")
+                    );
+                    livros.add(livro);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Erro ao buscar livros por título: " + e.getMessage());
+        }
+
+        return livros;
     }
 }
