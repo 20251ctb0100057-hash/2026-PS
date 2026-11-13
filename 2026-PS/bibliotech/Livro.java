@@ -1,4 +1,3 @@
-
 /*
  * Disciplina: 2026-PS
  * Projeto   : bibliotech
@@ -14,6 +13,7 @@ public class Livro {
     private String autor;
     private int ano;
     private boolean disponivel;
+    private String capa;
 
     // Construtor original
     public Livro(String titulo, String autor, int ano) {
@@ -50,6 +50,10 @@ public class Livro {
         return ano;
     }
 
+    public String getCapa() {
+        return capa;
+    }
+
     // Setters
     public void setId(int id) {
         this.id = id;
@@ -65,6 +69,10 @@ public class Livro {
 
     public void setAno(int ano) {
         this.ano = ano;
+    }
+
+    public void setCapa(String capa) {
+        this.capa = capa;
     }
 
     // Verifica se o livro está disponível
