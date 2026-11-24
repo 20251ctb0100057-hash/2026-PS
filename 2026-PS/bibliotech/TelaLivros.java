@@ -1,9 +1,11 @@
-```java
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 public class TelaLivros extends JFrame {
@@ -137,16 +139,41 @@ public class TelaLivros extends JFrame {
         carregarLivros();
     }
 
+    // Carrega os livros com tratamento de exceção
     private void carregarLivros() {
-        modelo.setRowCount(0);
 
-        List<Livro> livros = dao.listarLivros();
+        try {
 
-        for (Livro livro : livros) {
-            adicionarLinha(livro);
+            List<Livro> livros =
+                dao.listarLivros();
+
+            modelo.setRowCount(0);
+
+            for (Livro livro : livros) {
+                adicionarLinha(livro);
+            }
+
+            status.setText(
+                "Livros encontrados: " + livros.size()
+            );
+
+        } catch (PersistenciaException e) {
+
+            status.setText(
+                "Erro ao consultar o banco."
+            );
+
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+
+            JOptionPane.showMessageDialog(
+                this,
+                "Não foi possível carregar os livros. " +
+                "Verifique a conexão com o MariaDB.",
+                "Erro de conexão",
+                JOptionPane.ERROR_MESSAGE
+            );
         }
-
-        status.setText("Livros apresentados: " + livros.size());
     }
 
     // Carrega e redimensiona a imagem da capa
@@ -207,19 +234,31 @@ public class TelaLivros extends JFrame {
         int id;
 
         try {
+
             id = Integer.parseInt(texto);
 
             if (id <= 0) {
-                throw new NumberFormatException();
+                throw new IllegalArgumentException(
+                    "O ID deve ser positivo."
+                );
             }
 
-        } catch (NumberFormatException ex) {
+        } catch (NumberFormatException e) {
+
             JOptionPane.showMessageDialog(
                 this,
-                "Informe um ID inteiro positivo.",
-                "Entrada inválida",
-                JOptionPane.WARNING_MESSAGE
+                "Informe um número inteiro válido."
             );
+
+            return;
+
+        } catch (IllegalArgumentException e) {
+
+            JOptionPane.showMessageDialog(
+                this,
+                e.getMessage()
+            );
+
             return;
         }
 
@@ -262,7 +301,7 @@ public class TelaLivros extends JFrame {
         }
     }
 
-    // Seleciona uma imagem e atualiza a capa do livro
+    // Seleciona e salva uma imagem para a capa do livro
     private void selecionarCapa() {
 
         int linhaSelecionada = tabela.getSelectedRow();
@@ -278,7 +317,7 @@ public class TelaLivros extends JFrame {
         }
 
         int linhaModelo = tabela.convertRowIndexToModel(linhaSelecionada);
-        int id = (int) modelo.getValueAt(linhaModelo, 0);
+        int idLivro = (int) modelo.getValueAt(linhaModelo, 0);
 
         JFileChooser seletor = new JFileChooser();
 
@@ -295,29 +334,55 @@ public class TelaLivros extends JFrame {
         if (resultado == JFileChooser.APPROVE_OPTION) {
 
             File arquivo = seletor.getSelectedFile();
-            String caminho = arquivo.getAbsolutePath();
+            Path arquivoSelecionado = arquivo.toPath();
 
-            boolean atualizado = dao.atualizarCapa(id, caminho);
+            try {
 
-            if (atualizado) {
-                carregarLivros();
-
-                status.setText(
-                    "Capa atualizada para o livro ID: " + id
+                String caminho = ImagemLivro.salvar(
+                    arquivoSelecionado, idLivro
                 );
+
+                System.out.println(
+                    "Imagem salva em: " + caminho
+                );
+
+                boolean atualizado = dao.atualizarCapa(
+                    idLivro, caminho
+                );
+
+                if (atualizado) {
+
+                    carregarLivros();
+
+                    status.setText(
+                        "Capa atualizada para o livro ID: " + idLivro
+                    );
+
+                    JOptionPane.showMessageDialog(
+                        this,
+                        "Capa selecionada e salva com sucesso!"
+                    );
+
+                } else {
+
+                    JOptionPane.showMessageDialog(
+                        this,
+                        "Não foi possível atualizar a capa no banco de dados.",
+                        "Erro",
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                }
+
+            } catch (IOException e) {
 
                 JOptionPane.showMessageDialog(
                     this,
-                    "Capa selecionada e salva com sucesso!"
-                );
-
-            } else {
-                JOptionPane.showMessageDialog(
-                    this,
-                    "Não foi possível atualizar a capa.",
+                    "Não foi possível salvar a imagem.",
                     "Erro",
                     JOptionPane.ERROR_MESSAGE
                 );
+
+                e.printStackTrace();
             }
         }
     }
