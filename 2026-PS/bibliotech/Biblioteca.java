@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 
 public class Biblioteca {
@@ -12,11 +13,23 @@ public class Biblioteca {
         this.emprestimos = new ArrayList<Emprestimo>();
     }
 
-    // Cadastra um livro
-    public void cadastrarLivro(Livro livro) {
-        if (livro != null) {
-            livros.add(livro);
+    // Cadastra um livro após validar seus dados
+    public void cadastrarLivro(Livro livro)
+            throws LivroInvalidoException {
+
+        if (livro == null) {
+            throw new LivroInvalidoException(
+                "O livro não pode ser nulo."
+            );
         }
+
+        ValidadorLivro.validar(
+            livro.getTitulo(),
+            livro.getAutor(),
+            livro.getAno()
+        );
+
+        livros.add(livro);
     }
 
     // Cadastra um leitor
@@ -85,14 +98,12 @@ public class Biblioteca {
         Livro livro = buscarLivro(titulo);
         Leitor leitor = buscarLeitor(matricula);
 
-        // Se livro ou leitor não existem
         if (livro == null || leitor == null) {
             return false;
         }
 
         Emprestimo novo = new Emprestimo(livro, leitor);
 
-        // Tenta realizar o empréstimo
         if (!novo.realizarEmprestimo()) {
             return false;
         }

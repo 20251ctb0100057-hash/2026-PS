@@ -13,13 +13,14 @@ public class TesteRequisitos {
         }
     }
 
-    public static void main(String[] args) {
-        Biblioteca biblioteca = new Biblioteca();
+public static void main(String[] args) throws LivroInvalidoException {
+    Biblioteca biblioteca = new Biblioteca();
 
-        biblioteca.cadastrarLivro(
-            new Livro("Dom Casmurro", "Machado de Assis", 1));
-        biblioteca.cadastrarLivro(
-            new Livro("Capitaes de Areia", "Jorge Amado", 2));
+    biblioteca.cadastrarLivro(
+        new Livro("Dom Casmurro", "Machado de Assis", 1899));
+
+    biblioteca.cadastrarLivro(
+        new Livro("Capitaes de Areia", "Jorge Amado", 1937));
 
         biblioteca.cadastrarLeitor(
             new Leitor("Pedro Alves", "2026010", 1));

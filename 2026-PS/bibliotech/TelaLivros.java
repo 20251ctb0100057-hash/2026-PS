@@ -1,4 +1,3 @@
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -66,7 +65,6 @@ public class TelaLivros extends JFrame {
         add(principal, BorderLayout.CENTER);
         add(criarRodape(), BorderLayout.SOUTH);
 
-        // Duplo clique em um livro também abre os detalhes
         tabela.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -178,7 +176,6 @@ public class TelaLivros extends JFrame {
             "Selecionar capa", new Color(124, 58, 237)
         );
 
-        // NOVO BOTÃO: segunda tela de detalhes
         JButton detalhes = criarBotao(
             "Ver detalhes", new Color(14, 116, 144)
         );
@@ -416,13 +413,33 @@ public class TelaLivros extends JFrame {
 
         modelo.setRowCount(0);
 
-        List<Livro> livros = dao.listarLivros();
+        try {
 
-        for (Livro livro : livros) {
-            adicionarLinha(livro);
+            List<Livro> livros = dao.listarLivros();
+
+            for (Livro livro : livros) {
+                adicionarLinha(livro);
+            }
+
+            status.setText(
+                "Livros encontrados: " + livros.size()
+            );
+
+        } catch (PersistenciaException e) {
+
+            status.setText("Erro ao consultar o banco.");
+
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+
+            JOptionPane.showMessageDialog(
+                this,
+                "Não foi possível carregar os livros. " +
+                "Verifique a conexão com o MariaDB.",
+                "Erro de conexão",
+                JOptionPane.ERROR_MESSAGE
+            );
         }
-
-        status.setText("Livros apresentados: " + livros.size());
     }
 
     private ImageIcon carregarMiniatura(String caminho) {
@@ -482,19 +499,31 @@ public class TelaLivros extends JFrame {
         int id;
 
         try {
+
             id = Integer.parseInt(texto);
 
             if (id <= 0) {
-                throw new NumberFormatException();
+                throw new IllegalArgumentException(
+                    "O ID deve ser positivo."
+                );
             }
 
-        } catch (NumberFormatException ex) {
+        } catch (NumberFormatException e) {
+
             JOptionPane.showMessageDialog(
                 this,
-                "Informe um ID inteiro positivo.",
-                "Entrada inválida",
-                JOptionPane.WARNING_MESSAGE
+                "Informe um número inteiro válido."
             );
+
+            return;
+
+        } catch (IllegalArgumentException e) {
+
+            JOptionPane.showMessageDialog(
+                this,
+                e.getMessage()
+            );
+
             return;
         }
 
@@ -540,6 +569,7 @@ public class TelaLivros extends JFrame {
         }
     }
 
+    // Seleciona e salva uma imagem para a capa do livro
     private void selecionarCapa() {
 
         int linhaSelecionada = tabela.getSelectedRow();
@@ -571,78 +601,85 @@ public class TelaLivros extends JFrame {
 
         int resultado = seletor.showOpenDialog(this);
 
-        if (resultado == JFileChooser.APPROVE_OPTION) {
+        if (resultado != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
 
-            File arquivo = seletor.getSelectedFile();
+        File arquivo = seletor.getSelectedFile();
+        String nome = arquivo.getName();
+        int ponto = nome.lastIndexOf(".");
 
-            String nome = arquivo.getName();
-            int ponto = nome.lastIndexOf(".");
+        if (ponto == -1) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Arquivo sem extensão válida.",
+                "Imagem inválida",
+                JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
 
-            if (ponto == -1) {
-                JOptionPane.showMessageDialog(
-                    this, "Arquivo sem extensão válida."
+        String extensao =
+            nome.substring(ponto + 1).toLowerCase();
+
+        if (!extensao.matches("jpg|jpeg|png")) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Selecione uma imagem JPG, JPEG ou PNG."
+            );
+            return;
+        }
+
+        try {
+
+            Path pasta = Path.of("imagens", "livros");
+            Files.createDirectories(pasta);
+
+            String nomeArquivo = "livro_" + id + "." + extensao;
+            Path destino = pasta.resolve(nomeArquivo);
+
+            Files.copy(
+                arquivo.toPath(),
+                destino,
+                StandardCopyOption.REPLACE_EXISTING
+            );
+
+            boolean atualizado =
+                dao.atualizarCapa(id, destino.toString());
+
+            if (atualizado) {
+
+                carregarLivros();
+
+                status.setText(
+                    "Capa atualizada para o livro ID: " + id
                 );
-                return;
-            }
-
-            String extensao =
-                nome.substring(ponto + 1).toLowerCase();
-
-            if (!extensao.matches("jpg|jpeg|png")) {
-                JOptionPane.showMessageDialog(
-                    this, "Selecione uma imagem JPG, JPEG ou PNG."
-                );
-                return;
-            }
-
-            try {
-
-                Path pasta = Path.of("imagens", "livros");
-                Files.createDirectories(pasta);
-
-                String nomeArquivo = "livro_" + id + "." + extensao;
-                Path destino = pasta.resolve(nomeArquivo);
-
-                Files.copy(
-                    arquivo.toPath(),
-                    destino,
-                    StandardCopyOption.REPLACE_EXISTING
-                );
-
-                boolean atualizado =
-                    dao.atualizarCapa(id, destino.toString());
-
-                if (atualizado) {
-
-                    carregarLivros();
-
-                    status.setText(
-                        "Capa atualizada para o livro ID: " + id
-                    );
-
-                    JOptionPane.showMessageDialog(
-                        this,
-                        "Capa salva na pasta imagens/livros!"
-                    );
-
-                } else {
-                    JOptionPane.showMessageDialog(
-                        this,
-                        "Não foi possível atualizar a capa no banco.",
-                        "Erro",
-                        JOptionPane.ERROR_MESSAGE
-                    );
-                }
-
-            } catch (IOException e) {
 
                 JOptionPane.showMessageDialog(
                     this,
-                    "Erro ao copiar a imagem: " + e.getMessage(),
+                    "Capa salva na pasta imagens/livros!"
+                );
+
+            } else {
+
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Não foi possível atualizar a capa no banco.",
                     "Erro",
                     JOptionPane.ERROR_MESSAGE
                 );
             }
+
+        } catch (IOException e) {
+
+            JOptionPane.showMessageDialog(
+                this,
+                "Erro ao copiar a imagem: " + e.getMessage(),
+                "Erro",
+                JOptionPane.ERROR_MESSAGE
+            );
+
+            e.printStackTrace();
         }
     }
 
@@ -691,7 +728,6 @@ public class TelaLivros extends JFrame {
 
         janela.getContentPane().setBackground(fundo);
 
-        // Cabeçalho da segunda tela
         JPanel cabecalho = new JPanel(new BorderLayout());
         cabecalho.setBackground(azul);
         cabecalho.setBorder(
@@ -717,7 +753,6 @@ public class TelaLivros extends JFrame {
 
         cabecalho.add(textos, BorderLayout.WEST);
 
-        // Painel principal
         JPanel conteudo = new JPanel(new BorderLayout(30, 10));
         conteudo.setBackground(Color.WHITE);
         conteudo.setBorder(
@@ -729,7 +764,6 @@ public class TelaLivros extends JFrame {
             )
         );
 
-        // Capa ampliada
         JLabel capa = new JLabel();
         capa.setHorizontalAlignment(JLabel.CENTER);
         capa.setVerticalAlignment(JLabel.CENTER);
@@ -753,7 +787,6 @@ public class TelaLivros extends JFrame {
         painelCapa.setBackground(Color.WHITE);
         painelCapa.add(capa, BorderLayout.CENTER);
 
-        // Informações do livro
         JPanel informacoes = new JPanel();
         informacoes.setLayout(
             new BoxLayout(informacoes, BoxLayout.Y_AXIS)
@@ -808,7 +841,6 @@ public class TelaLivros extends JFrame {
         conteudo.add(painelCapa, BorderLayout.WEST);
         conteudo.add(informacoes, BorderLayout.CENTER);
 
-        // Rodapé
         JPanel rodape = new JPanel(
             new FlowLayout(FlowLayout.RIGHT)
         );
